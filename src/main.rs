@@ -7,6 +7,7 @@ mod upstream;
 
 use axum::{routing::get, Router};
 use std::sync::Arc;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -49,6 +50,10 @@ async fn main() -> anyhow::Result<()> {
     // Build router
     let app = Router::new()
         .route("/{z}/{x}/{filename}", get(get_tile))
+        .layer(CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(Any))
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
